@@ -15,5 +15,26 @@ th {
 #paginationContainer {
     display: flex;
     justify-content: center;
-    align-items: center;
+}
+h1{
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+#paginationContainer button,
+#paginationContainer select {
+    margin: 0 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #ffe6f2;
+}
+
+#paginationContainer button:hover,
+#paginationContainer select:hover {
+    background-color: #ddd;
+}
+
+#paginationContainer button:disabled {
+    cursor: default;
+    background-color: #ccc;
 }

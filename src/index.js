@@ -84,7 +84,6 @@ function createSalesData(records) {
 
     return salesArray;
 }
-
 function displayItems() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -105,15 +104,23 @@ function displayItems() {
         priceHeaderCell.textContent = product + " (в руб.)";
         headerRow.appendChild(priceHeaderCell);
     });
+    const totalPriceHeaderCell = document.createElement('th');
+    totalPriceHeaderCell.textContent = 'Общая цена каждого товара (руб.)';
+    headerRow.appendChild(totalPriceHeaderCell);
     tableHead.appendChild(headerRow);
 
     tableBody.innerHTML = '';
+
+    let totalUnitsSold = {};
+    let totalSalesPrice = 0;
 
     itemsToShow.forEach(rowData => {
         const row = document.createElement('tr');
         const companyCell = document.createElement('td');
         companyCell.textContent = rowData.company;
         row.appendChild(companyCell);
+
+        let totalCompanyPrice = 0;
 
         productKeys.forEach(product => {
             const quantityCell = document.createElement('td');
@@ -124,13 +131,59 @@ function displayItems() {
             const totalPrice = (rowData[product] || 0) * PRODUCT_PRICES[product];
             priceCell.textContent = totalPrice.toFixed(2) + " руб.";
             row.appendChild(priceCell);
+
+            totalUnitsSold[product] = (totalUnitsSold[product] || 0) + (rowData[product] || 0);
+            totalCompanyPrice += totalPrice;
         });
+
+        const totalPriceCell = document.createElement('td');
+        totalPriceCell.textContent = totalCompanyPrice.toFixed(2);
+        row.appendChild(totalPriceCell);
+
+        totalSalesPrice += totalCompanyPrice;
 
         tableBody.appendChild(row);
     });
-    const tableContainer = document.createElement('div');
-    tableContainer.id = 'salesTableContainer';
-    tableContainer.appendChild(tableElement);
 
-    document.getElementById('salesTable').appendChild(tableContainer);
+    const totalRow = document.createElement('tr');
+    const totalLabelCell = document.createElement('td');
+    totalLabelCell.textContent = 'Общее количество каждого проданного товара + общая цена';
+    totalRow.appendChild(totalLabelCell);
+
+    productKeys.forEach(product => {
+        const totalUnitsSoldCell = document.createElement('td');
+        totalUnitsSoldCell.textContent = totalUnitsSold[product] || 0;
+        totalRow.appendChild(totalUnitsSoldCell);
+
+        const emptyCell = document.createElement('td');
+        totalRow.appendChild(emptyCell);
+    });
+
+    const totalSalesPriceCell = document.createElement('td');
+    totalSalesPriceCell.textContent = totalSalesPrice.toFixed(2);
+    totalRow.appendChild(totalSalesPriceCell);
+
+    tableBody.appendChild(totalRow);
+
+    const averageRow = document.createElement('tr');
+    const averageLabelCell = document.createElement('td');
+    averageLabelCell.textContent = 'Среднее количество проданного товара + средняя цена за продукт';
+    averageRow.appendChild(averageLabelCell);
+
+    productKeys.forEach(product => {
+        const averageUnitsSoldCell = document.createElement('td');
+        const averageUnitsSold = totalUnitsSold[product] / 2 || 0;
+        averageUnitsSoldCell.textContent = averageUnitsSold.toFixed(0);
+        averageRow.appendChild(averageUnitsSoldCell);
+
+        const emptyCell = document.createElement('td');
+        averageRow.appendChild(emptyCell);
+    });
+
+    const averagePriceCell = document.createElement('td');
+    const averagePrice = totalSalesPrice / (itemsToShow.length * productKeys.length) || 0;
+    averagePriceCell.textContent = averagePrice.toFixed(2);
+    averageRow.appendChild(averagePriceCell);
+
+    tableBody.appendChild(averageRow);
 }
